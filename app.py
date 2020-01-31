@@ -27,6 +27,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.edit_button.clicked.connect(self.open_edit_window)
         self.edit_window.edited_strap.connect(self.replace_edited_strap)
 
+        self.delete_button.clicked.connect(self.delete)
+
+        # self.edit_button.setEnabled(False)
+        # self.delete_button.setEnabled(False) 
+        self.papertime_button.setEnabled(False)
+        self.red_button.setEnabled(False) 
+        self.blue_button.setEnabled(False)  
+
         table_headers = ['id', 'name', 'qty', 'colour', 'company code'] 
         self.setup_strap_table(table_headers)
 
@@ -52,17 +60,32 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         insert_row = self.strap_table.rowCount() 
         self.strap_table.insertRow(insert_row)
 
+        strap.id = insert_row + 1
+
         for column, data_piece in enumerate(strap.data_list()):
             print(f'row: {insert_row}, column: {column}, item: {data_piece}')
             item = QtWidgets.QTableWidgetItem(str(data_piece)) 
             self.strap_table.setItem(insert_row, column, item)
         self._extend_cell_functionality()
+        
+        self.edit_button.setEnabled(True) 
+        self.delete_button.setEnabled(True)
 
-    # EDIT WINDOW
+    # EDIT WINDOW FUNCTIONS
     def open_edit_window(self) -> None:
+        # check if table is empty, if so, disable all buttons
+        if self.strap_table.rowCount() == 0:
+            self.edit_button.setEnabled(False)
+            self.delete_button.setEnabled(False)
+            self._toggle_enable_edit_delete_button()
+            return
+        if not self.strap_table.selectedIndexes():
+            self._toggle_enable_edit_delete_button()
+            return
+        
+        print(f'item_data: {self.strap_table.selectedIndexes()}')
+
         current_table_selction = self.strap_table.selectedIndexes()[-1] 
-        for index in self.strap_table.selectedIndexes():
-            print(f'index: {index}')
         strap = self.straps[current_table_selction.row()]
         self.edit_window.name_input.setText(strap.name) 
         self.edit_window.qty_selection.setCurrentText(str(strap.qty)) 
@@ -86,10 +109,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.edit_window.strap_id = strap.id
         self.edit_window.show()
 
+        self._toggle_enable_buttons()
+
     def replace_edited_strap(self, strap: object) -> None:
         row_id = strap.id - 1
-        print(f'strapId: {strap.id}')
-        print(row_id)
         self.straps[row_id] = strap  
         for column, data_piece in enumerate(strap.data_list()):
             item = self.strap_table.item(row_id, column) 
@@ -100,10 +123,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.strap_table.cellClicked.connect(self._select_row) 
 
     def _select_row(self, row: int) -> None:
-        # print(f'item: {item}')
+        print(f'row count: {len(self.strap_table.selectedIndexes())}')
+
         for column in range(self.strap_table.columnCount()):
             row_item = self.strap_table.item(row, column)
             row_item.setSelected(True)
+        
+        # if not item_is_selected:
+        #     self._toggle_enable_edit_delete_button()
+
+    # DELETE 
+    def delete(self):
+        current_table_selction = self.strap_table.selectedIndexes()[-1] 
+        strap = self.straps[current_table_selction.row()]
+        self.straps.remove(strap) 
+        self.strap_table.removeRow(strap.id - 1)
+        self.strap_table.setRowCount(0)
+
+        if self.strap_table.rowCount() == 0:
+            self.edit_button.setEnabled(False) 
+            self.delete_button.setEnabled(False)
+
+    # Toggle Functions
+    def _toggle_enable_buttons(self):
+        self.papertime_button.setEnabled(not self.papertime_button.isEnabled())
+        self.blue_button.setEnabled(not self.blue_button.isEnabled()) 
+        self.red_button.setEnabled(not self.red_button.isEnabled())
+    
+    def _toggle_enable_edit_delete_button(self):
+        self.edit_button.setEnabled(not self.edit_button.isEnabled())
+        self.delete_button.setEnabled(not self.delete_button.isEnabled())
 
 
 def main():
