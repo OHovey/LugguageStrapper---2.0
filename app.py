@@ -3,11 +3,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import Qt
 
 from MainWindow import Ui_MainWindow
-# from Win.AddWindow import Ui_add_form
 from add_window import AddWindow 
 from edit_window import EditWindow
 
 from strap_table import StrapTableModel
+
+from Paperwork import Papertime
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -29,9 +30,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.delete_button.clicked.connect(self.delete)
 
-        # self.edit_button.setEnabled(False)
-        # self.delete_button.setEnabled(False) 
-        self.papertime_button.setEnabled(False)
+        self.papertime_button.setEnabled(False) 
+        self.papertime_button.clicked.connect(self.papertime)
+
         self.red_button.setEnabled(False) 
         self.blue_button.setEnabled(False)  
 
@@ -50,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     #   DEFINE WINDOWS AND REPECTIVE OPERATIONS: 
     # 
-    #   ADD WINDOW: 
+    #   ADD WINDOW FUNCTIONS: 
     def open_add_window(self) -> None:
         self.add_window.show()
 
@@ -67,9 +68,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             item = QtWidgets.QTableWidgetItem(str(data_piece)) 
             self.strap_table.setItem(insert_row, column, item)
         self._extend_cell_functionality()
-        
-        self.edit_button.setEnabled(True) 
-        self.delete_button.setEnabled(True)
+
+        self._toggle_button_enable()
 
     # EDIT WINDOW FUNCTIONS
     def open_edit_window(self) -> None:
@@ -77,10 +77,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.strap_table.rowCount() == 0:
             self.edit_button.setEnabled(False)
             self.delete_button.setEnabled(False)
-            self._toggle_enable_edit_delete_button()
+            self._toggle_button_enable()
             return
         if not self.strap_table.selectedIndexes():
-            self._toggle_enable_edit_delete_button()
+            self._toggle_button_enable()
             return
         
         print(f'item_data: {self.strap_table.selectedIndexes()}')
@@ -109,8 +109,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.edit_window.strap_id = strap.id
         self.edit_window.show()
 
-        self._toggle_enable_buttons()
-
     def replace_edited_strap(self, strap: object) -> None:
         row_id = strap.id - 1
         self.straps[row_id] = strap  
@@ -128,12 +126,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         for column in range(self.strap_table.columnCount()):
             row_item = self.strap_table.item(row, column)
             row_item.setSelected(True)
-        
-        # if not item_is_selected:
-        #     self._toggle_enable_edit_delete_button()
 
-    # DELETE 
-    def delete(self):
+        self._toggle_button_enable()
+
+    # DELETE FUNCTIONS
+    def delete(self) -> None:
         current_table_selction = self.strap_table.selectedIndexes()[-1] 
         strap = self.straps[current_table_selction.row()]
         self.straps.remove(strap) 
@@ -143,16 +140,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.strap_table.rowCount() == 0:
             self.edit_button.setEnabled(False) 
             self.delete_button.setEnabled(False)
+        
+        self._toggle_button_enable()
 
-    # Toggle Functions
-    def _toggle_enable_buttons(self):
-        self.papertime_button.setEnabled(not self.papertime_button.isEnabled())
-        self.blue_button.setEnabled(not self.blue_button.isEnabled()) 
-        self.red_button.setEnabled(not self.red_button.isEnabled())
-    
-    def _toggle_enable_edit_delete_button(self):
-        self.edit_button.setEnabled(not self.edit_button.isEnabled())
-        self.delete_button.setEnabled(not self.delete_button.isEnabled())
+    # PAPERTIME FUNCTIONS
+    def papertime(self) -> None:
+        blue_straps = map(lambda strap: strap.colour.lower() == 'blue', self.straps) 
+        red_straps = map(lambda strap: strap.colour.lower() == 'red', self.straps) 
+
+        Papertime(self.straps).make_document() 
+        Papertime(blue_straps).make_document() 
+        Papertime(red_straps).make_document()
+
+
+    def _toggle_button_enable(self):
+        print(f'selectedIndexes: {self.strap_table.selectedIndexes()}')
+        if self.strap_table.rowCount() == 0:
+            self.edit_button.setEnabled(False) 
+            self.delete_button.setEnabled(False)
+            self.red_button.setEnabled(False) 
+            self.blue_button.setEnabled(False) 
+            self.papertime_button.setEnabled(False)
+            return 
+        if len(self.strap_table.selectedIndexes()) > 0:
+            self.edit_button.setEnabled(True) 
+            self.delete_button.setEnabled(True) 
+            self.red_button.setEnabled(True) 
+            self.blue_button.setEnabled(True) 
+            self.papertime_button.setEnabled(True) 
+        else:
+            self.edit_button.setEnabled(False) 
+            self.delete_button.setEnabled(False) 
+            self.red_button.setEnabled(True) 
+            self.blue_button.setEnabled(True) 
+            self.papertime_button.setEnabled(True)
+        
 
 
 def main():

@@ -1,3 +1,5 @@
+import re
+
 class Strap:
 
     id = 1
@@ -19,6 +21,8 @@ class Strap:
         self.no_of_repeats = no_of_repeats   
 
         self.check_company_code(company_code)
+
+        self.calculate_repeats(self.name, self.qty)
 
         Strap.id += 1
 
@@ -45,7 +49,52 @@ class Strap:
             self.company_code
         ]
 
-         
+    def calculate_repeats(self, text: str, qty: int) -> int:
+        # these regexes will be used tod educt from the total repeats per strand
+        blunt_character_regex = re.compile('[a-zA-Z]') 
+        number_regex = re.compile('[0-9]') 
+        # these will be used to fo the opposite 
+        letter_i = re.compile('[i]+') 
+        number_1 = re.compile('[1]+')
+
+        repeat_reducer = 0
+
+        for i in text:
+            if blunt_character_regex.match(i):
+                return
+            if number_regex.match(i):
+                return
+            repeat_reducer += 1 
+
+            if letter_i.match(i) or number_1.match(i):
+                repeat_reducer -= 1 
+        
+        final_char_length = len(text) - repeat_reducer 
+
+        if final_char_length > 26:
+            repeats = 5
+        elif final_char_length <= 26 and final_char_length >= 24:
+            repeats = 6 
+        elif final_char_length >= 20 and final_char_length < 24:
+            repeats = 7 
+        elif final_char_length >= 16 and final_char_length < 20:
+            repeats = 8 
+        elif final_char_length >= 12 and final_char_length < 16:
+            repeats = 9 
+        elif final_char_length >= 9 and final_char_length < 12:
+            repeats = 10 
+        elif final_char_length >= 6 and final_char_length < 9:
+            repeats = 11 
+        elif final_char_length == 5:
+            repeats = 12 
+        elif final_char_length == 4:
+            repeats = 13 
+        elif final_char_length <= 3:
+            repeats == 14  
+        
+        return repeats * qty
+        
+        
 
 
 
