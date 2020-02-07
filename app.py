@@ -64,7 +64,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         strap.id = insert_row + 1
 
         for column, data_piece in enumerate(strap.data_list()):
-            print(f'row: {insert_row}, column: {column}, item: {data_piece}')
             item = QtWidgets.QTableWidgetItem(str(data_piece)) 
             self.strap_table.setItem(insert_row, column, item)
         self._extend_cell_functionality()
@@ -82,8 +81,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if not self.strap_table.selectedIndexes():
             self._toggle_button_enable()
             return
-        
-        print(f'item_data: {self.strap_table.selectedIndexes()}')
 
         current_table_selction = self.strap_table.selectedIndexes()[-1] 
         strap = self.straps[current_table_selction.row()]
@@ -121,8 +118,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.strap_table.cellClicked.connect(self._select_row) 
 
     def _select_row(self, row: int) -> None:
-        print(f'row count: {len(self.strap_table.selectedIndexes())}')
-
         for column in range(self.strap_table.columnCount()):
             row_item = self.strap_table.item(row, column)
             row_item.setSelected(True)
@@ -145,8 +140,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # PAPERTIME FUNCTIONS
     def papertime(self) -> None:
-        blue_straps = map(lambda strap: strap.colour.lower() == 'blue', self.straps) 
-        red_straps = map(lambda strap: strap.colour.lower() == 'red', self.straps) 
+        blue_straps = list(filter(lambda strap: strap.colour.lower() == 'blue', self.straps)) 
+        red_straps = list(filter(lambda strap: strap.colour.lower() == 'red', self.straps)) 
 
         Papertime(self.straps).make_document() 
         Papertime(blue_straps).make_document() 
@@ -154,7 +149,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def _toggle_button_enable(self):
-        print(f'selectedIndexes: {self.strap_table.selectedIndexes()}')
         if self.strap_table.rowCount() == 0:
             self.edit_button.setEnabled(False) 
             self.delete_button.setEnabled(False)
