@@ -293,6 +293,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="csv_button">
+             <property name="text">
+              <string>Import CSV Data</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="papertime_button">
              <property name="text">
               <string>Papertime</string>

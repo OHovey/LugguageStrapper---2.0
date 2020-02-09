@@ -28,7 +28,7 @@ class AddWindow(QtWidgets.QMainWindow, Ui_add_form):
         urgent_bool = True if self.yes_urgent_button.isChecked() else False 
         no_of_repeats = self.repeats_combo_box.currentText() 
 
-        strap = Strap(name, no_of_repeats, qty, colour, company_code, buckle_type, urgent_bool) 
+        strap = Strap(name, qty, colour, company_code, no_of_repeats, buckle_type, urgent_bool) 
 
         self.created_strap.emit(strap) 
 

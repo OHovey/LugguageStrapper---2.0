@@ -4,12 +4,14 @@ class Strap:
 
     id = 1
 
-    def __init__(self, name: str, no_of_repeats: int, 
-        qty: int, colour: str, 
-        company_code: str, buckle_type: str = None,
-        urgent_bool: bool = None) -> object: 
+    urgent_c_code = 4694
 
-        self.urgent_c_code = 4694
+    def __init__(self, name: str, 
+        qty: int, colour: str, 
+        company_code: str, 
+        no_of_repeats: int = None,
+        buckle_type: str = None,
+        urgent_bool: bool = None) -> object: 
 
         self.id = Strap.id
         self.name = name 
@@ -18,11 +20,10 @@ class Strap:
         self.company_code = company_code 
         self.urgent_bool = urgent_bool 
         self.buckle_type = buckle_type
-        self.no_of_repeats = no_of_repeats   
 
         self.check_company_code(company_code)
 
-        self.calculate_repeats(self.name, self.qty)
+        self.no_of_repeats = Strap.calculate_repeats(self.name, self.qty)
 
         Strap.id += 1
 
@@ -30,7 +31,7 @@ class Strap:
         return f'Strap: \n  name: {self.name}'    
     
     def check_company_code(self, company_code: int) -> None:
-        if company_code == self.urgent_c_code:
+        if company_code == Strap.urgent_c_code:
             self.buckle = 'Old' 
             self.urgent_bool = True 
             return 
@@ -49,10 +50,11 @@ class Strap:
             self.company_code
         ]
 
-    def calculate_repeats(self, text: str, qty: int) -> int:
-        # these regexes will be used tod educt from the total repeats per strand
+    @staticmethod
+    def calculate_repeats(text: str, qty: int) -> int:
+        # these regexes will be used to deduct from the total repeats per strand
         blunt_character_regex = re.compile('[a-zA-Z]') 
-        number_regex = re.compile('[0-9]') 
+        number_regex = re.compile('[0-9]')  
         # these will be used to fo the opposite 
         letter_i = re.compile('[i]+') 
         number_1 = re.compile('[1]+')

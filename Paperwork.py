@@ -18,36 +18,40 @@ class Papertime:
         # TODO: fix the argument placement within the map functions
         # DEVIDE BY URGENCY
         # -----------------
-        urgent_straps = filter(lambda strap: strap.urgent_bool, self.straps) 
-        non_urgent_straps = filter(lambda strap: not strap.urgent_bool, self.straps) 
-        # [print(f'strap: {strap.qty}') for strap in urgent_straps]
-        # print(f'len of list: {len(list(urgent_straps))}')
-        # print(f'non_urgent_straps: {non_urgent_straps}')
+        urgent_straps = list(filter(lambda strap: strap.urgent_bool, self.straps)) 
+        non_urgent_straps = list(filter(lambda strap: not strap.urgent_bool, self.straps)) 
         # -----------------
         # DEVIDE BY COLOUR 
         # -----------------
-        urgent_red_straps = filter(lambda strap: strap.colour.lower() == 'red', urgent_straps) 
-        urgent_blue_straps = filter(lambda strap: strap.colour.lower() == 'blue', urgent_straps) 
+        urgent_red_straps = list(filter(lambda strap: strap.colour.lower() == 'red', urgent_straps))
+        urgent_blue_straps = list(filter(lambda strap: strap.colour.lower() == 'navy', urgent_straps)) 
+        # print('urgent_red_straps: {}'.format([strap for strap in urgent_red_straps])) 
+        # print('urgent_blue_straps: {}'.format([strap.colour.lower() for strap in urgent_blue_straps]))    
 
-        non_urgent_red_straps = filter(lambda strap: strap.colour.lower() == 'red', non_urgent_straps) 
-        non_urgent_blue_straps = filter(lambda strap: strap.colour.lower() == 'blue', non_urgent_straps) 
+        non_urgent_red_straps = list(filter(lambda strap: strap.colour.lower() == 'red', non_urgent_straps))
+        non_urgent_blue_straps = list(filter(lambda strap: strap.colour.lower() == 'navy', non_urgent_straps)) 
         # -----------------
         # DEVIDE BY BUCKLE TYPE 
         # ----------------- 
         urgent_red_straps_NORMLE_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'new', urgent_red_straps))
-        [print(f'strap: {strap.qty}') for strap in urgent_red_straps_NORMLE_BUCKLE]
-        for strap in urgent_red_straps_NORMLE_BUCKLE:
-            print(f'strap: {strap}')
         urgent_red_straps_OLD_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'old', urgent_red_straps))
+        # print('strap in urgent_red_straps_NORMLE_BUCKLE: {}'.format([strap for strap in urgent_red_straps_NORMLE_BUCKLE]))
+        # print('strap in urgent_red_straps_OLD_BUCKLE: {}'.format([strap for strap in urgent_red_straps_OLD_BUCKLE]))
 
         urgent_blue_straps_NORMLE_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'new', urgent_blue_straps))
         urgent_blue_straps_OLD_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'old', urgent_blue_straps))
+        # print('strap in urgent_blue_straps_NORMLE_BUCKLE: {}'.format([strap for strap in urgent_blue_straps_NORMLE_BUCKLE]))
+        # print('strap in urgent_blue_straps_OLD_BUCKLE: {}'.format([strap for strap in urgent_blue_straps_OLD_BUCKLE]))
 
         non_urgent_red_straps_NORMLE_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'new', non_urgent_red_straps))
         non_urgent_red_straps_OLD_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'old', non_urgent_red_straps))
+        # print('strap in non_urgent_red_straps_NORMLE_BUCKLE: {}'.format([strap for strap in non_urgent_red_straps_NORMLE_BUCKLE]))
+        # print('strap in non_urgent_red_straps_OLD_BUCKLE: {}'.format([strap for strap in non_urgent_red_straps_OLD_BUCKLE]))
 
         non_urgent_blue_straps_NORMLE_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'new', non_urgent_blue_straps))
         non_urgent_blue_straps_OLD_BUCKLE = list(filter(lambda strap: strap.buckle_type.lower() == 'old', non_urgent_blue_straps))
+        # print('strap in non_urgent_blue_straps_NORMLE_BUCKLE: {}'.format([strap for strap in non_urgent_blue_straps_NORMLE_BUCKLE]))
+        # print('strap in non_urgent_blue_straps_OLD_BUCKLE: {}'.format([strap for strap in non_urgent_blue_straps_OLD_BUCKLE]))
         # -----------------
 
         blue_index = 1
@@ -57,43 +61,45 @@ class Papertime:
         there_are_non_urgent_straps = len([l for l in self.straps if not l.urgent_bool])
 
         if there_are_urgent_straps:
-            document.add_heading('URGENT') 
+            document.add_heading('URGENT')
+            p = document.add_paragraph() 
 
         for strap in urgent_blue_straps_NORMLE_BUCKLE:
-            document.add_paragraph(f"{blue_index}B | {strap.qty}X  '{strap.name}' \n")
+            p.add_run(f"{blue_index}B | {strap.qty}X  '{strap.name}' \n").bold = True
             blue_index += 1
 
         for strap in urgent_blue_straps_OLD_BUCKLE:
-            document.add_paragraph(f"{blue_index}B | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n")
+            p.add_run(f"{blue_index}B | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n").bold = True
             blue_index += 1 
             
         for strap in urgent_red_straps_NORMLE_BUCKLE:
-            document.add_paragraph(f"{red_index}R | {strap.qty}X '{strap.name}' \n") 
+            p.add_run(f"{red_index}R | {strap.qty}X '{strap.name}' \n") 
             red_index += 1 
  
         for strap in urgent_red_straps_OLD_BUCKLE:
-            document.add_paragraph(f"{red_index}R | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n")
+            p.add_run(f"{red_index}R | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n")
             red_index += 1
 
         if there_are_non_urgent_straps:
             print('yay 2')
             document.add_heading('NORMAL') 
+            p2 = document.add_paragraph()
 
         for strap in non_urgent_blue_straps_NORMLE_BUCKLE:
-            document.add_paragraph(f"{blue_index}B | {strap.qty}X  '{strap.name}' \n").bold = True
+            p2.add_run(f"{blue_index}B | {strap.qty}X  '{strap.name}' \n").bold = True
             blue_index += 1
 
         for strap in non_urgent_blue_straps_OLD_BUCKLE:
-            document.add_paragraph(f"{blue_index}B | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n")
+            p2.add_run(f"{blue_index}B | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n").bold = True
             blue_index += 1 
             
         for strap in non_urgent_red_straps_NORMLE_BUCKLE:
-            document.add_paragraph(f"{red_index}R | {strap.qty}X '{strap.name}' \n") 
+            p2.add_run(f"{red_index}R | {strap.qty}X '{strap.name}' \n") 
             red_index += 1 
 
         for strap in non_urgent_red_straps_OLD_BUCKLE:
-            document.add_paragraph(f"{red_index}R | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n")
-            p.add_run('hi')
+            p2.add_run(f"{red_index}R | {strap.qty}X '{strap.name}' {strap.buckle_type} Buckle \n")
+            red_index += 1
         
         if self.strap_colour is None:
             document_title = 'All.docx' 

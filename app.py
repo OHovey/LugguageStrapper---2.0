@@ -9,6 +9,9 @@ from edit_window import EditWindow
 from strap_table import StrapTableModel
 
 from Paperwork import Papertime
+from csv_reader import CsvReader
+
+from strap import Strap
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -35,6 +38,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.red_button.setEnabled(False) 
         self.blue_button.setEnabled(False)  
+
+        self.csv_button.clicked.connect(self.open_file_finder)
 
         table_headers = ['id', 'name', 'qty', 'colour', 'company code'] 
         self.setup_strap_table(table_headers)
@@ -140,12 +145,32 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # PAPERTIME FUNCTIONS
     def papertime(self) -> None:
-        blue_straps = list(filter(lambda strap: strap.colour.lower() == 'blue', self.straps)) 
+        blue_straps = list(filter(lambda strap: strap.colour.lower() == 'navy', self.straps)) 
         red_straps = list(filter(lambda strap: strap.colour.lower() == 'red', self.straps)) 
 
         Papertime(self.straps).make_document() 
-        Papertime(blue_straps).make_document() 
-        Papertime(red_straps).make_document()
+        Papertime(blue_straps, 'navy').make_document() 
+        Papertime(red_straps, 'red').make_document()
+
+    def import_csv_data(self, filename: str) -> None:
+        array_of_strap_data = CsvReader(filename).get_data() 
+        for strap_data in array_of_strap_data:
+            name, quantity, colour, company_code = strap_data[0], strap_data[1], strap_data[2], strap_data[3]
+            strap = Strap(name, quantity, colour, company_code)
+            self._add_strap_to_table(strap)
+    
+    # IMPORT CSV FUNCTIONS 
+    def open_file_finder(self) -> None:
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptOpen)
+        dialog.setDirectory('C:/Users/Oliver/Documents/Java')
+        # dialog.setFileMode(QtWidgets.QFileDialog.Directory)
+        dialog.setViewMode(QtWidgets.QFileDialog.Detail)
+
+        if dialog.exec_() == QtWidgets.QFileDialog.Accepted:
+            self.import_csv_data(dialog.selectedFiles()[0])
+
+    # ---------------------------------
 
 
     def _toggle_button_enable(self):

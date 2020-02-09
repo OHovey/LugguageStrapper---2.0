@@ -31,7 +31,7 @@ class EditWindow(QtWidgets.QMainWindow, Ui_edit_form):
         urgent_bool = True if self.yes_urgent_radio_button else False 
         no_of_repeats = self.repeats_combo_box.currentText()
 
-        strap = Strap(name, no_of_repeats, qty, colour, company_code, buckle_type, urgent_bool) 
+        strap = Strap(name, qty, colour, company_code, no_of_repeats, buckle_type, urgent_bool) 
         strap.id = self.strap_id
         self.edited_strap.emit(strap)
         
